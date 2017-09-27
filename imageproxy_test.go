@@ -1,3 +1,17 @@
+// Copyright 2013 Google Inc. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package imageproxy
 
 import (
@@ -10,11 +24,77 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"reflect"
 	"strings"
 	"testing"
-
-	"github.com/gregjones/httpcache"
 )
+
+func TestCopyHeader(t *testing.T) {
+	tests := []struct {
+		dst, src http.Header
+		keys     []string
+		want     http.Header
+	}{
+		// empty
+		{http.Header{}, http.Header{}, nil, http.Header{}},
+		{http.Header{}, http.Header{}, []string{}, http.Header{}},
+		{http.Header{}, http.Header{}, []string{"A"}, http.Header{}},
+
+		// nothing to copy
+		{
+			dst:  http.Header{"A": []string{"a1"}},
+			src:  http.Header{},
+			keys: nil,
+			want: http.Header{"A": []string{"a1"}},
+		},
+		{
+			dst:  http.Header{},
+			src:  http.Header{"A": []string{"a"}},
+			keys: []string{"B"},
+			want: http.Header{},
+		},
+
+		// copy headers
+		{
+			dst:  http.Header{},
+			src:  http.Header{"A": []string{"a"}},
+			keys: nil,
+			want: http.Header{"A": []string{"a"}},
+		},
+		{
+			dst:  http.Header{"A": []string{"a"}},
+			src:  http.Header{"B": []string{"b"}},
+			keys: nil,
+			want: http.Header{"A": []string{"a"}, "B": []string{"b"}},
+		},
+		{
+			dst:  http.Header{"A": []string{"a"}},
+			src:  http.Header{"B": []string{"b"}, "C": []string{"c"}},
+			keys: []string{"B"},
+			want: http.Header{"A": []string{"a"}, "B": []string{"b"}},
+		},
+		{
+			dst:  http.Header{"A": []string{"a1"}},
+			src:  http.Header{"A": []string{"a2"}},
+			keys: nil,
+			want: http.Header{"A": []string{"a1", "a2"}},
+		},
+	}
+
+	for _, tt := range tests {
+		// copy dst map
+		got := make(http.Header)
+		for k, v := range tt.dst {
+			got[k] = v
+		}
+
+		copyHeader(got, tt.src, tt.keys...)
+		if !reflect.DeepEqual(got, tt.want) {
+			t.Errorf("copyHeader(%v, %v, %v) returned %v, want %v", tt.dst, tt.src, tt.keys, got, tt.want)
+		}
+
+	}
+}
 
 func TestAllowed(t *testing.T) {
 	whitelist := []string{"good"}
@@ -72,7 +152,7 @@ func TestAllowed(t *testing.T) {
 			t.Errorf("error parsing url %q: %v", tt.url, err)
 		}
 		req := &Request{u, tt.options, tt.request}
-		if got, want := p.allowed(req), tt.allowed; got != want {
+		if got, want := p.allowed(req), tt.allowed; (got == nil) != want {
 			t.Errorf("allowed(%q) returned %v, want %v.\nTest struct: %#v", req, got, want, tt)
 		}
 	}
@@ -133,7 +213,7 @@ func TestValidSignature(t *testing.T) {
 	}
 }
 
-func TestCheck304(t *testing.T) {
+func TestShould304(t *testing.T) {
 	tests := []struct {
 		req, resp string
 		is304     bool
@@ -143,8 +223,13 @@ func TestCheck304(t *testing.T) {
 			"HTTP/1.1 200 OK\nEtag: \"v\"\n\n",
 			true,
 		},
-		{ // last-modified match
+		{ // last-modified before
 			"GET / HTTP/1.1\nIf-Modified-Since: Sun, 02 Jan 2000 00:00:00 GMT\n\n",
+			"HTTP/1.1 200 OK\nLast-Modified: Sat, 01 Jan 2000 00:00:00 GMT\n\n",
+			true,
+		},
+		{ // last-modified match
+			"GET / HTTP/1.1\nIf-Modified-Since: Sat, 01 Jan 2000 00:00:00 GMT\n\n",
 			"HTTP/1.1 200 OK\nLast-Modified: Sat, 01 Jan 2000 00:00:00 GMT\n\n",
 			true,
 		},
@@ -200,18 +285,9 @@ func TestCheck304(t *testing.T) {
 			t.Errorf("http.ReadResponse(%q) returned error: %v", tt.resp, err)
 		}
 
-		if got, want := check304(req, resp), tt.is304; got != want {
-			t.Errorf("check304(%q, %q) returned: %v, want %v", tt.req, tt.resp, got, want)
+		if got, want := should304(req, resp), tt.is304; got != want {
+			t.Errorf("should304(%q, %q) returned: %v, want %v", tt.req, tt.resp, got, want)
 		}
-	}
-}
-
-// make sure that the proxy is passed to transport in order
-// to access the command line flags.
-func TestProxyPointer(t *testing.T) {
-	p := NewProxy(nil, nil)
-	if p.Client.Transport.(*httpcache.Transport).Transport.(*TransformingTransport).Proxy != p {
-		t.Errorf("Transport doesnt have proxy pointer")
 	}
 }
 
@@ -236,7 +312,7 @@ func (t testTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 		img := new(bytes.Buffer)
 		png.Encode(img, m)
 
-		raw = fmt.Sprintf("HTTP/1.1 200 OK\nContent-Length: %d\n\n%v", len(img.Bytes()), img.Bytes())
+		raw = fmt.Sprintf("HTTP/1.1 200 OK\nContent-Length: %d\n\n%s", len(img.Bytes()), img.Bytes())
 	default:
 		raw = "HTTP/1.1 404 Not Found\n\n"
 	}
