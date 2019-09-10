@@ -35,9 +35,9 @@ import (
 	rediscache "github.com/gregjones/httpcache/redis"
 	"github.com/jamiealquiza/envy"
 	"github.com/peterbourgon/diskv"
-	"willnorris.com/go/imageproxy"
-	"willnorris.com/go/imageproxy/internal/gcscache"
-	"willnorris.com/go/imageproxy/internal/s3cache"
+	"github.com/admpub/imageproxy"
+	"github.com/admpub/imageproxy/internal/gcscache"
+	"github.com/admpub/imageproxy/internal/s3cache"
 )
 
 const defaultMemorySize = 100

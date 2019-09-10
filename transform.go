@@ -32,7 +32,7 @@ import (
 	"golang.org/x/image/bmp"    // register bmp format
 	"golang.org/x/image/tiff"   // register tiff format
 	_ "golang.org/x/image/webp" // register webp format
-	"willnorris.com/go/gifresize"
+	"github.com/admpub/gifresize"
 )
 
 // default compression quality of resized jpegs

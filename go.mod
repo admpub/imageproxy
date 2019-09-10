@@ -1,4 +1,4 @@
-module willnorris.com/go/imageproxy
+module github.com/admpub/imageproxy
 
 require (
 	cloud.google.com/go v0.37.1
@@ -6,6 +6,7 @@ require (
 	github.com/Azure/azure-sdk-for-go v26.5.0+incompatible // indirect
 	github.com/Azure/go-autorest v11.5.2+incompatible // indirect
 	github.com/PaulARoy/azurestoragecache v0.0.0-20170906084534-3c249a3ba788
+	github.com/admpub/imageproxy v0.9.0
 	github.com/aws/aws-sdk-go v1.19.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/die-net/lrucache v0.0.0-20181227122439-19a39ef22a11
@@ -32,7 +33,6 @@ require (
 	golang.org/x/sys v0.0.0-20190322080309-f49334f85ddc // indirect
 	google.golang.org/appengine v1.5.0 // indirect
 	google.golang.org/genproto v0.0.0-20190321212433-e79c0c59cdb5 // indirect
-	willnorris.com/go/gifresize v1.0.0
 )
 
 replace (
