@@ -35,7 +35,7 @@ import (
 	"time"
 
 	"github.com/gregjones/httpcache"
-	tphttp "willnorris.com/go/imageproxy/third_party/http"
+	tphttp "github.com/admpub/imageproxy/third_party/http"
 )
 
 // Proxy serves image requests.
