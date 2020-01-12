@@ -1,4 +1,4 @@
-// Copyright 2013 Google Inc. All rights reserved.
+// Copyright 2013 Google LLC. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -108,7 +108,8 @@ func main() {
 	}
 
 	fmt.Printf("imageproxy listening on %s\n", server.Addr)
-	log.Fatal(server.ListenAndServe())
+	http.Handle("/", p)
+	log.Fatal(http.ListenAndServe(*addr, nil))
 }
 
 // tieredCache allows specifying multiple caches via flags, which will create
