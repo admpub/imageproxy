@@ -31,6 +31,7 @@ import (
 	"github.com/die-net/lrucache"
 	"github.com/die-net/lrucache/twotier"
 	"github.com/garyburd/redigo/redis"
+	"github.com/gorilla/mux"
 	"github.com/gregjones/httpcache/diskcache"
 	rediscache "github.com/gregjones/httpcache/redis"
 	"github.com/jamiealquiza/envy"
@@ -46,9 +47,10 @@ var addr = flag.String("addr", "localhost:8080", "TCP address to listen on")
 var allowHosts = flag.String("allowHosts", "", "comma separated list of allowed remote hosts")
 var denyHosts = flag.String("denyHosts", "", "comma separated list of denied remote hosts")
 var referrers = flag.String("referrers", "", "comma separated list of allowed referring hosts")
+var includeReferer = flag.Bool("includeReferer", false, "include referer header in remote requests")
 var baseURL = flag.String("baseURL", "", "default base URL for relative remote URLs")
 var cache tieredCache
-var signatureKey = flag.String("signatureKey", "", "HMAC key used in calculating request signatures")
+var signatureKeys signatureKeyList
 var scaleUp = flag.Bool("scaleUp", false, "allow images to scale beyond their original dimensions")
 var timeout = flag.Duration("timeout", 0, "time limit for requests served by this proxy")
 var verbose = flag.Bool("verbose", false, "print verbose logging messages")
@@ -58,6 +60,7 @@ var userAgent = flag.String("userAgent", "willnorris/imageproxy", "specify the u
 
 func init() {
 	flag.Var(&cache, "cache", "location to cache images (see https://github.com/willnorris/imageproxy#cache)")
+	flag.Var(&signatureKeys, "signatureKey", "HMAC key used in calculating request signatures")
 }
 
 func main() {
@@ -77,18 +80,7 @@ func main() {
 	if *contentTypes != "" {
 		p.ContentTypes = strings.Split(*contentTypes, ",")
 	}
-	if *signatureKey != "" {
-		key := []byte(*signatureKey)
-		if strings.HasPrefix(*signatureKey, "@") {
-			file := strings.TrimPrefix(*signatureKey, "@")
-			var err error
-			key, err = ioutil.ReadFile(file)
-			if err != nil {
-				log.Fatalf("error reading signature file: %v", err)
-			}
-		}
-		p.SignatureKey = key
-	}
+	p.SignatureKeys = signatureKeys
 	if *baseURL != "" {
 		var err error
 		p.DefaultBaseURL, err = url.Parse(*baseURL)
@@ -97,6 +89,7 @@ func main() {
 		}
 	}
 
+	p.IncludeReferer = *includeReferer
 	p.Timeout = *timeout
 	p.ScaleUp = *scaleUp
 	p.Verbose = *verbose
@@ -107,9 +100,32 @@ func main() {
 		Handler: p,
 	}
 
+	r := mux.NewRouter().SkipClean(true).UseEncodedPath()
+	r.PathPrefix("/").Handler(p)
 	fmt.Printf("imageproxy listening on %s\n", server.Addr)
-	http.Handle("/", p)
-	log.Fatal(http.ListenAndServe(*addr, nil))
+	log.Fatal(http.ListenAndServe(*addr, r))
+}
+
+type signatureKeyList [][]byte
+
+func (skl *signatureKeyList) String() string {
+	return fmt.Sprint(*skl)
+}
+
+func (skl *signatureKeyList) Set(value string) error {
+	for _, v := range strings.Fields(value) {
+		key := []byte(v)
+		if strings.HasPrefix(v, "@") {
+			file := strings.TrimPrefix(v, "@")
+			var err error
+			key, err = ioutil.ReadFile(file)
+			if err != nil {
+				log.Fatalf("error reading signature file: %v", err)
+			}
+		}
+		*skl = append(*skl, key)
+	}
+	return nil
 }
 
 // tieredCache allows specifying multiple caches via flags, which will create
