@@ -24,6 +24,7 @@ import (
 	"strings"
 	"time"
 
+	tphttp "github.com/admpub/imageproxy/third_party/http"
 	"github.com/fcjr/aia-transport-go"
 	"github.com/gregjones/httpcache"
 	"github.com/prometheus/client_golang/prometheus"
