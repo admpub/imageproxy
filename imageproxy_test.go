@@ -1,16 +1,5 @@
-// Copyright 2013 Google LLC. All rights reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Copyright 2013 The imageproxy authors.
+// SPDX-License-Identifier: Apache-2.0
 
 package imageproxy
 
@@ -110,7 +99,6 @@ func TestCopyHeader(t *testing.T) {
 		if !reflect.DeepEqual(got, tt.want) {
 			t.Errorf("copyHeader(%v, %v, %v) returned %v, want %v", tt.dst, tt.src, tt.keys, got, tt.want)
 		}
-
 	}
 }
 
@@ -375,7 +363,7 @@ func (t testTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	case "/png":
 		m := image.NewNRGBA(image.Rect(0, 0, 1, 1))
 		img := new(bytes.Buffer)
-		png.Encode(img, m)
+		_ = png.Encode(img, m)
 
 		raw = fmt.Sprintf("HTTP/1.1 200 OK\nContent-Length: %d\nContent-Type: image/png\n\n%s", len(img.Bytes()), img.Bytes())
 	default:

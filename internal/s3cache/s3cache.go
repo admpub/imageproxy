@@ -1,3 +1,6 @@
+// Copyright 2013 The imageproxy authors.
+// SPDX-License-Identifier: Apache-2.0
+
 // Package s3cache provides an httpcache.Cache implementation that stores
 // cached values on Amazon S3.
 package s3cache
@@ -75,7 +78,7 @@ func (c *cache) Delete(key string) {
 
 func keyToFilename(key string) string {
 	h := md5.New()
-	io.WriteString(h, key)
+	_, _ = io.WriteString(h, key)
 	return hex.EncodeToString(h.Sum(nil))
 }
 
