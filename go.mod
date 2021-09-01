@@ -3,8 +3,7 @@ module github.com/admpub/imageproxy
 go 1.16
 
 require (
-	cloud.google.com/go v0.88.0 // indirect
-	cloud.google.com/go/storage v1.16.0
+	cloud.google.com/go/storage v1.16.1
 	github.com/Azure/azure-sdk-for-go v56.0.0+incompatible // indirect
 	github.com/Azure/go-autorest/autorest v0.11.19 // indirect
 	github.com/Azure/go-autorest/autorest/adal v0.9.14 // indirect
@@ -34,9 +33,6 @@ require (
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
 	golang.org/x/net v0.0.0-20210726213435-c6fcb2dbf985 // indirect
-	google.golang.org/api v0.51.0 // indirect
-	google.golang.org/genproto v0.0.0-20210728212813-7823e685a01f // indirect
-	willnorris.com/go/gifresize v1.0.0 // indirect
 )
 
 // local copy of envy package without cobra support
