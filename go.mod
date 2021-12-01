@@ -11,7 +11,7 @@ require (
 	github.com/Azure/go-autorest/autorest/to v0.4.0 // indirect
 	github.com/PaulARoy/azurestoragecache v0.0.0-20170906084534-3c249a3ba788
 	github.com/admpub/gifresize v1.0.2
-	github.com/aws/aws-sdk-go v1.40.10
+	github.com/aws/aws-sdk-go v1.42.16
 	github.com/die-net/lrucache v0.0.0-20210724224853-653a274e85b0
 	github.com/disintegration/imaging v1.6.2
 	github.com/dnaeon/go-vcr v1.2.0 // indirect
@@ -36,7 +36,6 @@ require (
 	golang.org/x/net v0.0.0-20210726213435-c6fcb2dbf985 // indirect
 	google.golang.org/api v0.51.0 // indirect
 	google.golang.org/genproto v0.0.0-20210728212813-7823e685a01f // indirect
-	willnorris.com/go/gifresize v1.0.0 // indirect
 )
 
 // local copy of envy package without cobra support
