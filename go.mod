@@ -31,12 +31,9 @@ require (
 	github.com/prometheus/common v0.30.0 // indirect
 	github.com/prometheus/procfs v0.7.1 // indirect
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
-	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
-	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
-	golang.org/x/net v0.0.0-20210726213435-c6fcb2dbf985 // indirect
+	golang.org/x/image v0.5.0
 	google.golang.org/api v0.51.0 // indirect
 	google.golang.org/genproto v0.0.0-20210728212813-7823e685a01f // indirect
-	willnorris.com/go/gifresize v1.0.0 // indirect
 )
 
 // local copy of envy package without cobra support
