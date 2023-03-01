@@ -26,7 +26,7 @@ require (
 	github.com/jamiealquiza/envy v1.1.0
 	github.com/muesli/smartcrop v0.3.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
-	github.com/peterbourgon/diskv v0.0.0-20171120014656-2973218375c3
+	github.com/peterbourgon/diskv v2.0.1+incompatible
 	github.com/prometheus/client_golang v1.11.0
 	github.com/prometheus/common v0.30.0 // indirect
 	github.com/prometheus/procfs v0.7.1 // indirect
@@ -36,7 +36,6 @@ require (
 	golang.org/x/net v0.0.0-20210726213435-c6fcb2dbf985 // indirect
 	google.golang.org/api v0.51.0 // indirect
 	google.golang.org/genproto v0.0.0-20210728212813-7823e685a01f // indirect
-	willnorris.com/go/gifresize v1.0.0 // indirect
 )
 
 // local copy of envy package without cobra support
