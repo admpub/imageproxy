@@ -14,7 +14,8 @@ import (
 	"log"
 	"math"
 
-	"github.com/disintegration/imaging"
+	"github.com/admpub/gifresize"
+	"github.com/admpub/imaging"
 	"github.com/muesli/smartcrop"
 	"github.com/muesli/smartcrop/nfnt"
 	"github.com/prometheus/client_golang/prometheus"
@@ -22,7 +23,6 @@ import (
 	"golang.org/x/image/bmp"    // register bmp format
 	"golang.org/x/image/tiff"   // register tiff format
 	_ "golang.org/x/image/webp" // register webp format
-	"github.com/admpub/gifresize"
 )
 
 // default compression quality of resized jpegs

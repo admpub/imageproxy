@@ -16,7 +16,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/disintegration/imaging"
+	"github.com/admpub/imaging"
 	"golang.org/x/image/bmp"
 )
 

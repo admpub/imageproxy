@@ -7,7 +7,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -17,6 +16,9 @@ import (
 	"time"
 
 	"github.com/PaulARoy/azurestoragecache"
+	"github.com/admpub/imageproxy"
+	"github.com/admpub/imageproxy/internal/gcscache"
+	"github.com/admpub/imageproxy/internal/s3cache"
 	"github.com/die-net/lrucache"
 	"github.com/die-net/lrucache/twotier"
 	"github.com/gomodule/redigo/redis"
@@ -25,9 +27,6 @@ import (
 	rediscache "github.com/gregjones/httpcache/redis"
 	"github.com/jamiealquiza/envy"
 	"github.com/peterbourgon/diskv"
-	"github.com/admpub/imageproxy"
-	"github.com/admpub/imageproxy/internal/gcscache"
-	"github.com/admpub/imageproxy/internal/s3cache"
 )
 
 const defaultMemorySize = 100
@@ -109,7 +108,7 @@ func (skl *signatureKeyList) Set(value string) error {
 		if strings.HasPrefix(v, "@") {
 			file := strings.TrimPrefix(v, "@")
 			var err error
-			key, err = ioutil.ReadFile(file)
+			key, err = os.ReadFile(file)
 			if err != nil {
 				log.Fatalf("error reading signature file: %v", err)
 			}
